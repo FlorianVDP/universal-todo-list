@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: todo_postgres
+    env_file:
+      - ./docker/.env.db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      #- ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend/node-express
+    container_name: todo_backend
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./backend/node-express/.env
+    depends_on:
+      - db
+    volumes:
+      - ./backend/node-express:/app
+      - /app/node_modules
+
+volumes:
+  pgdata:
